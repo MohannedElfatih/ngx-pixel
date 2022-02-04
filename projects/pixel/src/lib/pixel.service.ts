@@ -45,13 +45,13 @@ export class PixelService {
    * - Adds the script to page's head
    * - Tracks first page view
    */
-  initialize(pixelId = this.config.pixelId): void {
+  initialize(pixelId = this.config.pixelId, applicationID?: string): void {
     if (this.isLoaded()) {
       console.warn('Tried to initialize a Pixel instance while another is already active. Please call `remove()` before initializing a new instance.');
       return;
     }
     this.config.enabled = true;
-    this.addPixelScript(pixelId);
+    this.addPixelScript(pixelId, applicationID);
   }
 
   /** Remove the Pixel tracking script */
@@ -116,22 +116,38 @@ export class PixelService {
    * Adds the Facebook Pixel tracking script to the application
    * @param pixelId The Facebook Pixel ID to use
    */
-  private addPixelScript(pixelId: string): void {
+  private addPixelScript(pixelId: string, applicationID: string): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    const pixelCode = `
-    var pixelCode = function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '${pixelId}');
-    fbq('track', 'PageView');`;
+    let pixelCode = ``;
+    if (applicationID) {
+      pixelCode = `
+        var pixelCode = function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '${pixelId}');
+        fbq('set', 'mobileBridge', '${pixelId}', '${applicationID}');
+        fbq('track', 'PageView');`;
+    } else {
+      pixelCode = `
+        var pixelCode = function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '${pixelId}');
+        fbq('track', 'PageView');`;
+    }
 
 
     const scriptElement = this.renderer.createElement('script');
