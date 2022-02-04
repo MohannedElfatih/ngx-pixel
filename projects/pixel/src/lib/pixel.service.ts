@@ -45,13 +45,13 @@ export class PixelService {
    * - Adds the script to page's head
    * - Tracks first page view
    */
-  initialize(pixelId = this.config.pixelId, applicationID?: string): void {
+  initialize(pixelId = this.config.pixelId, applicationId = this.config.applicationId): void {
     if (this.isLoaded()) {
       console.warn('Tried to initialize a Pixel instance while another is already active. Please call `remove()` before initializing a new instance.');
       return;
     }
     this.config.enabled = true;
-    this.addPixelScript(pixelId, applicationID);
+    this.addPixelScript(pixelId, applicationId);
   }
 
   /** Remove the Pixel tracking script */
@@ -116,13 +116,13 @@ export class PixelService {
    * Adds the Facebook Pixel tracking script to the application
    * @param pixelId The Facebook Pixel ID to use
    */
-  private addPixelScript(pixelId: string, applicationID: string): void {
+  private addPixelScript(pixelId: string, applicationId?: string): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
     let pixelCode = ``;
-    if (applicationID) {
+    if (applicationId) {
       pixelCode = `
         var pixelCode = function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -133,7 +133,7 @@ export class PixelService {
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '${pixelId}');
-        fbq('set', 'mobileBridge', '${pixelId}', '${applicationID}');
+        fbq('set', 'mobileBridge', '${pixelId}', '${applicationId}');
         fbq('track', 'PageView');`;
     } else {
       pixelCode = `

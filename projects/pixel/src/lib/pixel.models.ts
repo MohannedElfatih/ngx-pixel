@@ -3,6 +3,8 @@ export interface PixelConfiguration {
   enabled?: boolean;
   /** Your Facebook Pixel ID */
   pixelId: string;
+  /** Your Facebook Application ID */
+  applicationId?: string;
 }
 
 export interface PixelEventProperties {
