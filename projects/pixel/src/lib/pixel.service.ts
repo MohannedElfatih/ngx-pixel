@@ -69,7 +69,8 @@ export class PixelService {
    */
   track(
     eventName: PixelEventName,
-    properties?: PixelEventProperties
+    properties?: PixelEventProperties,
+    eventID?: string
   ): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -81,11 +82,18 @@ export class PixelService {
     }
 
     if (properties) {
-      fbq('track', eventName, properties);
+      if (eventID) {
+        fbq('track', eventName, properties, { eventID });
+      } else {
+        fbq('track', eventName, properties);
+      }
     } else {
-      fbq('track', eventName);
+      if (eventID) {
+        fbq('track', eventName, {}, { eventID });
+      } else {
+        fbq('track', eventName);
+      }
     }
-
   }
 
   /**
@@ -95,7 +103,7 @@ export class PixelService {
    * @param eventName The name of the event that is being tracked
    * @param properties Optional properties of the event
    */
-  trackCustom(eventName: string, properties?: object): void {
+  trackCustom(eventName: string, properties?: object, eventID?: string): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -106,9 +114,17 @@ export class PixelService {
     }
 
     if (properties) {
-      fbq('trackCustom', eventName, properties);
+      if (eventID) {
+        fbq('trackCustom', eventName, properties, { eventID });
+      } else {
+        fbq('trackCustom', eventName, properties);
+      }
     } else {
-      fbq('trackCustom', eventName);
+      if (eventID) {
+        fbq('trackCustom', eventName, {}, { eventID });
+      } else {
+        fbq('trackCustom', eventName);
+      }
     }
   }
 
