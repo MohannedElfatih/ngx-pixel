@@ -26,18 +26,6 @@ export class PixelService {
     // It is therefore injected as any and then cast to Document
     this.doc = injectedDocument as Document;
     this.renderer = rendererFactory.createRenderer(null, null);
-
-    if (router) {
-      // Log page views after router navigation ends
-      router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-
-        if (this.isLoaded()) {
-          this.track('PageView');
-        }
-
-      });
-    }
-
   }
 
   /**
@@ -132,7 +120,7 @@ export class PixelService {
    * Adds the Facebook Pixel tracking script to the application
    * @param pixelId The Facebook Pixel ID to use
    */
-  private addPixelScript(pixelId: string, applicationId?: string): void {
+  private addPixelScript(pixelId: string, applicationId?: string, extras: string = ""): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -148,7 +136,7 @@ export class PixelService {
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '${pixelId}');
+        fbq('init', '${pixelId}', ${extras});
         fbq('set', 'mobileBridge', '${pixelId}', '${applicationId}');
         fbq('track', 'PageView');`;
     } else {
@@ -161,7 +149,7 @@ export class PixelService {
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '${pixelId}');
+        fbq('init', '${pixelId}', ${extras});
         fbq('track', 'PageView');`;
     }
 
