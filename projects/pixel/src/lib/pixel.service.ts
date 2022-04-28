@@ -33,13 +33,13 @@ export class PixelService {
    * - Adds the script to page's head
    * - Tracks first page view
    */
-  initialize(pixelId = this.config.pixelId, applicationId = this.config.applicationId): void {
+  initialize(pixelId = this.config.pixelId, applicationId = this.config.applicationId, extras?: string): void {
     if (this.isLoaded()) {
       console.warn('Tried to initialize a Pixel instance while another is already active. Please call `remove()` before initializing a new instance.');
       return;
     }
     this.config.enabled = true;
-    this.addPixelScript(pixelId, applicationId);
+    this.addPixelScript(pixelId, applicationId, extras);
   }
 
   /** Remove the Pixel tracking script */
